@@ -5,6 +5,7 @@ export default function Layout() {
     <div>
       <header className="page-header">
         <NavLink to="/">Home</NavLink>
+        <NavLink to="add-recipe">Add Recipe</NavLink>
       </header>
       <Outlet />
       <footer className="page-footer">Footer</footer>
