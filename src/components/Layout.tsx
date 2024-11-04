@@ -1,12 +1,10 @@
 import { NavLink, Outlet } from "react-router-dom";
+import Header from "./Header";
 
 export default function Layout() {
   return (
-    <div>
-      <header className="page-header">
-        <NavLink to="/">Home</NavLink>
-        <NavLink to="add-recipe">Add Recipe</NavLink>
-      </header>
+    <div className="flex min-h-screen flex-col">
+      <Header />
       <Outlet />
       <footer className="page-footer">Footer</footer>
     </div>

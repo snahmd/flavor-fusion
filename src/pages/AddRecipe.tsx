@@ -102,7 +102,7 @@ export default function AddRecipe() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(recipe);
+
     // Burada API'ye gönderme işlemi yapılabilir
     const { data: recipeData, error: recipeError } = await supabase
       .from("recipes")
@@ -112,30 +112,56 @@ export default function AddRecipe() {
           description: recipe.description,
           image: "image",
         },
-      ]);
-    const data: any = await supabase.from("recipes").select("*");
-
-    const x = await supabase
-      .from("recipes")
-      .insert([{ title: "test", description: "test", image: "test" }]);
-    console.log(x);
-
+      ])
+      .select();
     if (recipeError) {
       console.error(recipeError);
       return;
-    } else {
-      const recipeId = recipeData[0].recipe_id;
     }
 
+    // Recipe ID fetch
+    console.log(recipeData);
+    const data = await supabase
+      .from("recipes")
+      .select("*")
+      .eq("title", recipe.title);
+    const recipeID: string = data.data[0].id;
+
+    // Ingredients insert
     const ingredientsData = recipe.ingredients;
 
-    // const { data: recipeData, error: recipeError } = await supabase
-    // .from("ingredients")
-    // .insert(ingredientsData);
+    const fixedIngredients = [];
 
-    console.log({
-      ingredientsData,
-      recipe_id: recipeId,
+    for (let i = 0; i < ingredientsData.length; i++) {
+      fixedIngredients.push({
+        name: ingredientsData[i].name,
+        unit: ingredientsData[i].unit,
+        quantity: ingredientsData[i].quantity,
+        recipe_id: recipeID,
+      });
+    }
+
+    const x = await supabase.from("ingredients").insert(fixedIngredients);
+
+    // Prepare data for insert
+    const fixedPreparation = [];
+
+    for (let i = 0; i < recipe.preparation.length; i++) {
+      fixedPreparation.push({
+        text: recipe.preparation[i].text,
+        recipe_id: recipeData[0].id,
+        index: i,
+      });
+    }
+
+    const y = await supabase.from("preparation").insert(fixedPreparation);
+
+    // Reset form
+    setRecipe({
+      title: "",
+      description: "",
+      ingredients: [],
+      preparation: [],
     });
   };
 
@@ -188,7 +214,6 @@ export default function AddRecipe() {
                     onChange={(e) =>
                       updateIngredient(ing.id, "unit", e.target.value)
                     }
-                    required
                   />
                   <Input
                     placeholder="Miktar"
@@ -196,7 +221,6 @@ export default function AddRecipe() {
                     onChange={(e) =>
                       updateIngredient(ing.id, "quantity", e.target.value)
                     }
-                    required
                   />
                 </div>
                 <Button
