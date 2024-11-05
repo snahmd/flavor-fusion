@@ -13,6 +13,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { supabase } from "@/utils/supabaseClient";
+import { CloudinaryUploadWidget } from "../components/CloudinaryUploadWidget";
+import { Cloudinary } from "@cloudinary/url-gen";
 
 type Ingredient = {
   id: string;
@@ -33,8 +35,10 @@ type Recipe = {
   ingredients: Ingredient[];
   preparation: Preparation[];
 };
+const cld = new Cloudinary({ cloud: { cloudName: "dtn4ucmat" } });
 
 export default function AddRecipe() {
+  const [imageId, setImageId] = useState<string | null>(null);
   const [recipe, setRecipe] = useState<Recipe>({
     title: "",
     description: "",
@@ -110,7 +114,7 @@ export default function AddRecipe() {
         {
           title: recipe.title,
           description: recipe.description,
-          image: "image",
+          image: imageId,
         },
       ])
       .select();
@@ -165,12 +169,18 @@ export default function AddRecipe() {
     });
   };
 
+  const myImage = cld.image(imageId);
+
   return (
     <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto p-4">
       <Card>
         <CardHeader>
           <CardTitle>Yeni Tarif Ekle</CardTitle>
         </CardHeader>
+        <CloudinaryUploadWidget
+          uwConfig={{ cloudName: "dtn4ucmat", uploadPreset: "flavor-fusion" }}
+          setPublicId={setImageId}
+        />
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="title">Tarif Başlığı</Label>

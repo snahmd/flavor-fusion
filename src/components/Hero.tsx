@@ -1,8 +1,9 @@
+import heroImg from "../assets/recipe-hero.jpg";
 export default function Hero() {
   return (
     <section className="relative h-[600px] w-full">
       <img
-        src="/placeholder.svg?height=600&width=1200"
+        src={heroImg}
         alt="Food background"
         className="absolute inset-0 object-cover brightness-50 w-full h-full"
       />
